@@ -7,7 +7,8 @@ const httpLink = createHttpLink({
 })
 // 注册登录link
 const authLink = setContext((_, { headers }) => {
-  const token = sessionStorage.getItem(AUTH_TOKEN)
+  const token =
+    sessionStorage.getItem(AUTH_TOKEN) || localStorage.getItem(AUTH_TOKEN)
   return {
     headers: {
       ...headers,

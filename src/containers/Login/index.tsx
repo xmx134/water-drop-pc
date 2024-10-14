@@ -7,23 +7,25 @@ import {
   ProFormText
 } from '@ant-design/pro-components'
 import { message, theme } from 'antd'
-import type { CSSProperties } from 'react'
-import { useState } from 'react'
+// import type { CSSProperties } from 'react'
+// import { useState } from 'react'
 
 import styles from './index.module.less'
 import { useMutation } from '@apollo/client'
 import { LOGIN, SEND_CODE_MSG } from '../../graphql/auth'
 import { AUTH_TOKEN } from '../../utils/constants'
 import { useNavigate } from 'react-router'
+import { useSearchParams } from 'react-router-dom'
+import { useTitle } from '@/hooks'
 
-type LoginType = 'phone' | 'account'
+// type LoginType = 'phone' | 'account'
 
-const iconStyles: CSSProperties = {
-  color: 'rgba(0, 0, 0, 0.2)',
-  fontSize: '18px',
-  verticalAlign: 'middle',
-  cursor: 'pointer'
-}
+// const iconStyles: CSSProperties = {
+//   color: 'rgba(0, 0, 0, 0.2)',
+//   fontSize: '18px',
+//   verticalAlign: 'middle',
+//   cursor: 'pointer'
+// }
 
 interface IValue {
   tel: string
@@ -34,8 +36,10 @@ interface IValue {
 const Page = () => {
   const [run] = useMutation(SEND_CODE_MSG)
   const [login] = useMutation(LOGIN)
-
+  const [params] = useSearchParams()
   const nav = useNavigate()
+
+  useTitle('登录')
 
   const loginHandler = async (values: IValue) => {
     const res = await login({
@@ -43,10 +47,14 @@ const Page = () => {
     })
     if (res.data.login.code === 200) {
       if (values.autoLogin) {
+        sessionStorage.setItem(AUTH_TOKEN, '')
+        localStorage.setItem(AUTH_TOKEN, res.data.login.data)
+      } else {
+        localStorage.setItem(AUTH_TOKEN, '')
         sessionStorage.setItem(AUTH_TOKEN, res.data.login.data)
       }
       message.success(res.data.login.message)
-      nav('/')
+      nav(params.get('orgUrl') || '/')
       return
     }
     message.error(res.data.login.message)
@@ -130,7 +138,7 @@ const Page = () => {
                     tel
                   }
                 })
-                if (res.data.sendCodeMsg.code === 200) {
+                if (res.data.sendCodeMessage.code === 200) {
                   message.success(res.data.login.message)
                 } else {
                   message.error(res.data.login.message)
