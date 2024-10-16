@@ -15,26 +15,35 @@ export const useGetUser = () => {
   const { setStore } = useUserContext()
   const location = useLocation()
   const nav = useNavigate()
-  const { loading } = useQuery<{ getUserInfo: IUser }>(GET_USER, {
+  const { loading, refetch } = useQuery<{ getUserInfo: IUser }>(GET_USER, {
     onCompleted: (data) => {
       if (data.getUserInfo) {
-        const { id, name, tel } = data.getUserInfo
+        const { id, name, tel, desc, avatar } = data.getUserInfo
         setStore({
           id,
           name,
-          tel
+          tel,
+          desc,
+          avatar,
+          refetchHandler: refetch
         })
         if (location.pathname.startsWith('/login')) {
           nav('/')
         }
         return
       }
+      setStore({
+        refetchHandler: refetch
+      })
       if (location.pathname !== '/login') {
         nav(`/login?orgUrl = ${location.pathname}`)
       }
     },
     onError: () => {
       if (location.pathname !== '/login') {
+        setStore({
+          refetchHandler: refetch
+        })
         nav(`/login?orgUrl = ${location.pathname}`)
       }
     }

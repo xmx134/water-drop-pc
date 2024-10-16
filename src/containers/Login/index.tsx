@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { LockOutlined, MobileOutlined } from '@ant-design/icons'
 import {
   LoginFormPage,
@@ -17,6 +18,7 @@ import { AUTH_TOKEN } from '../../utils/constants'
 import { useNavigate } from 'react-router'
 import { useSearchParams } from 'react-router-dom'
 import { useTitle } from '@/hooks'
+import { useUserContext } from '@/hooks/userHooks'
 
 // type LoginType = 'phone' | 'account'
 
@@ -37,6 +39,7 @@ const Page = () => {
   const [run] = useMutation(SEND_CODE_MSG)
   const [login] = useMutation(LOGIN)
   const [params] = useSearchParams()
+  const { store } = useUserContext()
   const nav = useNavigate()
 
   useTitle('登录')
@@ -46,6 +49,7 @@ const Page = () => {
       variables: values
     })
     if (res.data.login.code === 200) {
+      store.refetchHandler()
       if (values.autoLogin) {
         sessionStorage.setItem(AUTH_TOKEN, '')
         localStorage.setItem(AUTH_TOKEN, res.data.login.data)
@@ -66,14 +70,11 @@ const Page = () => {
       <LoginFormPage
         onFinish={loginHandler}
         backgroundImageUrl="https://mdn.alipayobjects.com/huamei_gcee1x/afts/img/A*y0ZTS6WLwvgAAAAAAAAAAAAADml6AQ/fmt.webp"
-        logo="https://github.githubassets.com/favicons/favicon.png"
-        backgroundVideoUrl="https://gw.alipayobjects.com/v/huamei_gcee1x/afts/video/jXRBRK_VAwoAAAAAAAAAAAAAK4eUAQBr"
-        title="Github"
         containerStyle={{
           backgroundColor: 'rgba(0, 0, 0,0.65)',
           backdropFilter: 'blur(4px)'
         }}
-        subTitle="全球最大的代码托管平台"
+        subTitle="登录"
       >
         {
           <>
@@ -155,20 +156,12 @@ const Page = () => {
           <ProFormCheckbox noStyle name="autoLogin">
             自动登录
           </ProFormCheckbox>
-          <a
-            style={{
-              float: 'right'
-            }}
-          >
-            忘记密码
-          </a>
         </div>
       </LoginFormPage>
     </div>
   )
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
 export default () => {
   return (
     <ProConfigProvider dark>

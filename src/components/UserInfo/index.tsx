@@ -4,7 +4,6 @@ import { connect, useGetUser } from '../../hooks/userHooks'
 
 // 获取用户信息组件
 const UserInfo = ({ children }: IPropChild) => {
-  //   const [store, setState] = useUserContext()
   const { loading } = useGetUser()
   return (
     <Spin spinning={loading}>
